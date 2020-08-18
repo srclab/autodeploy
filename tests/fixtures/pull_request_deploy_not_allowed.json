@@ -1,0 +1,11 @@
+{
+  "action": "closed",
+  "pull_request": {
+    "base": {
+      "ref": "pulling_branch"
+    },
+    "merged": true,
+    "labels": [
+    ]
+  }
+}

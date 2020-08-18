@@ -1,0 +1,14 @@
+{
+  "action": "closed",
+  "pull_request": {
+    "base": {
+      "ref": "not_actual_branch"
+    },
+    "merged": true,
+    "labels": [
+      {
+        "name": "allowed_label"
+      }
+    ]
+  }
+}
