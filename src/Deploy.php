@@ -132,7 +132,7 @@ class Deploy implements DeployInterface
     }
 
     /**
-     * Это мерж пула.
+     * Это мерж пула в актуальную ветку.
      *
      * @param string $github_event
      * @param string $github_payload
