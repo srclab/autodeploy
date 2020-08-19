@@ -1,6 +1,6 @@
 <?php
 
-namespace Srclab;
+namespace SrcLab\AutoDeploy;
 
 use Exception;
 

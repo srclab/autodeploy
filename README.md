@@ -3,12 +3,12 @@
 ```
 {
   "require": {
-    "srclab/autodeploy": "master"
+    "srclab/autodeploy": "^2.0"
   },
   "repositories": [
     {
-      "type": "vcs",
-      "url":  "https://github.com/srclab/autodeploy"
+      "type": "github",
+      "url":  "https://github.com/srclab/autodeploy.git"
     }
   ]
 }

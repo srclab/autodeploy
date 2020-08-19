@@ -1,11 +1,11 @@
 <?php
 
-namespace Srclab\Test;
+namespace SrcLab\AutoDeploy\Test;
 
-use Srclab\Deploy;
 use ReflectionClass;
-use Srclab\DeployInterface;
+use SrcLab\AutoDeploy\Deploy;
 use PHPUnit\Framework\TestCase;
+use SrcLab\AutoDeploy\DeployInterface;
 
 class DeployTest extends TestCase
 {
