@@ -4,7 +4,7 @@ namespace SrcLab\AutoDeploy;
 
 use Exception;
 
-class DeployException extends Exception
+class AutoDeployException extends Exception
 {
     //
 }

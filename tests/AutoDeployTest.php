@@ -3,16 +3,16 @@
 namespace SrcLab\AutoDeploy\Test;
 
 use ReflectionClass;
-use SrcLab\AutoDeploy\Deploy;
+use SrcLab\AutoDeploy\AutoDeploy;
 use PHPUnit\Framework\TestCase;
 
-class DeployTest extends TestCase
+class AutoDeployTest extends TestCase
 {
     public function testHashesNotEqual()
     {
-        $deploy = new Deploy([
-            'local_token' => 'bad_local_token',
-            'pulling_branch' => 'pulling_branch',
+        $deploy = new AutoDeploy([
+            'token' => 'bad_local_token',
+            'branch' => 'branch',
             'work_dir' => 'work_dir',
         ]);
 
@@ -22,21 +22,21 @@ class DeployTest extends TestCase
 
     public function testNotActualEvent()
     {
-        $result = $this->deployWithParams('github_payload', 'pulling_branch', 'not_actual_event');
+        $result = $this->deployWithParams('github_payload', 'branch', 'not_actual_event');
         $this->assertFalse($result);
     }
 
     public function testPullRequestNotClosed()
     {
         $github_payload = file_get_contents('tests/fixtures/pull_request_not_closed.json');
-        $result = $this->deployWithParams($github_payload, 'pulling_branch', 'pull_request');
+        $result = $this->deployWithParams($github_payload, 'branch', 'pull_request');
         $this->assertFalse($result);
     }
 
     public function testPullRequestNotMerged()
     {
         $github_payload = file_get_contents('tests/fixtures/pull_request_not_merged.json');
-        $result = $this->deployWithParams($github_payload, 'pulling_branch', 'pull_request');
+        $result = $this->deployWithParams($github_payload, 'branch', 'pull_request');
 
         $this->assertFalse($result);
     }
@@ -44,7 +44,7 @@ class DeployTest extends TestCase
     public function testPullRequestNotActualBranch()
     {
         $github_payload = file_get_contents('tests/fixtures/pull_request_not_actual_branch.json');
-        $result = $this->deployWithParams($github_payload, 'pulling_branch', 'pull_request');
+        $result = $this->deployWithParams($github_payload, 'branch', 'pull_request');
 
         $this->assertFalse($result);
     }
@@ -52,7 +52,7 @@ class DeployTest extends TestCase
     public function testPullRequestDeployNotAllowed()
     {
         $github_payload = file_get_contents('tests/fixtures/pull_request_deploy_not_allowed.json');
-        $result = $this->deployWithParams($github_payload, 'pulling_branch', 'pull_request');
+        $result = $this->deployWithParams($github_payload, 'branch', 'pull_request');
 
         $this->assertFalse($result);
     }
@@ -60,7 +60,7 @@ class DeployTest extends TestCase
     public function testPushNotActualBranch()
     {
         $github_payload = file_get_contents('tests/fixtures/push_not_actual_branch.json');
-        $result = $this->deployWithParams($github_payload, 'pulling_branch', 'push');
+        $result = $this->deployWithParams($github_payload, 'branch', 'push');
 
         $this->assertFalse($result);
     }
@@ -69,21 +69,21 @@ class DeployTest extends TestCase
     {
         $github_payload = file_get_contents('tests/fixtures/pull_request.json');
         $this->expectExceptionMessage('The provided cwd "work_dir" does not exist.');
-        $this->deployWithParams($github_payload, 'pulling_branch', 'pull_request');
+        $this->deployWithParams($github_payload, 'branch', 'pull_request');
     }
 
     public function testPushDeploy()
     {
         $github_payload = file_get_contents('tests/fixtures/push.json');
         $this->expectExceptionMessage('The provided cwd "work_dir" does not exist.');
-        $this->deployWithParams($github_payload, 'pulling_branch', 'push');
+        $this->deployWithParams($github_payload, 'branch', 'push');
     }
 
-    protected function deployWithParams($github_payload, $pulling_branch, $github_event, $deploy_type = Deploy::LARAVEL_TYPE)
+    protected function deployWithParams($github_payload, $branch, $github_event, $deploy_type = AutoDeploy::LARAVEL_TYPE)
     {
-        $deploy = new Deploy([
-            'local_token' => 'local_token',
-            'pulling_branch' => $pulling_branch,
+        $deploy = new AutoDeploy([
+            'token' => 'token',
+            'branch' => $branch,
             'work_dir' => 'work_dir',
         ]);
 

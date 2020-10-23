@@ -6,7 +6,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Throwable;
 
-class Deploy
+class AutoDeploy
 {
     /**
      * Тип делоя.
@@ -20,7 +20,7 @@ class Deploy
      * Метка автодеплоя в пул запросе, при которой выполнять автоматические действия.
      */
     protected const DEPLOY_LABEL = 'Автодеплой';
-    
+
     /**
      * @var array
      */
@@ -29,14 +29,13 @@ class Deploy
     /**
      * Deploy constructor.
      *
-     * @param string $local_token
-     * @param string $pulling_branch
-     * @param string $work_dir
+     * @param array $config
+     * @throws \SrcLab\AutoDeploy\AutoDeployException
      */
     public function __construct(array $config)
     {
-        if(empty($config['local_token']) || empty($config['pulling_branch']) || empty($config['work_dir'])) {
-            throw new DeployException('Не установлены обязательные параметры конфигурации.');
+        if (empty($config['token']) || empty($config['branch']) || empty($config['work_dir'])) {
+            throw new AutoDeployException('Не установлены обязательные параметры конфигурации.', 500);
         }
 
         $this->config = $config;
@@ -54,26 +53,44 @@ class Deploy
      */
     public function deploy($github_payload, $github_hash, $github_event, $deploy_type = self::LARAVEL_TYPE)
     {
-
-        if (!hash_equals($github_hash, $this->getLocalHash($github_payload))) {
-            throw new DeployException('Хэши не совпадают');
+        /**
+         * Автодеплой отключен.
+         */
+        if (empty($this->config['enabled'])) {
+            return false;
         }
 
-        if (
-            !$this->isTargetBranchPullRequest($github_event, $github_payload)
-            && !$this->isTargetBranchPush($github_event, $github_payload)
-        ) {
+        /**
+         * Проверка токенов.
+         */
+        if (!hash_equals($github_hash, $this->getLocalHash($github_payload))) {
+            throw new AutoDeployException('Хэши не совпадают', 400);
+        }
+
+        /**
+         * Проверка целевой ветки.
+         */
+        if (!$this->isTargetBranchPullRequest($github_event, $github_payload) && !$this->isTargetBranchPush($github_event, $github_payload)) {
             return false;
         }
 
         try {
 
+            /**
+             * Общие команды для выполнения.
+             */
             $processes = $this->getCommonProcesses();
 
+            /**
+             * Команды для laravel приложения.
+             */
             if ($deploy_type == self::LARAVEL_TYPE) {
                 $processes = array_merge($processes, $this->getLaravelProcesses());
             }
 
+            /**
+             * Выполнения команд.
+             */
             foreach ($processes as $process) {
                 $process->setWorkingDirectory($this->config['work_dir']);
                 $process->mustRun();
@@ -82,10 +99,13 @@ class Deploy
             return true;
 
         } catch (Throwable $e) {
-            throw new DeployException($e->getMessage(), $e->getCode());
+            throw new AutoDeployException($e->getMessage(), $e->getCode());
         }
-
     }
+
+    //****************************************************************
+    //************************** Support *****************************
+    //****************************************************************
 
     /**
      * Локальный хэш.
@@ -95,7 +115,7 @@ class Deploy
      */
     protected function getLocalHash($github_payload)
     {
-        return 'sha1=' . hash_hmac('sha1', $github_payload, $this->config['local_token'], false);
+        return 'sha1=' . hash_hmac('sha1', $github_payload, $this->config['token'], false);
     }
 
     /**
@@ -106,7 +126,7 @@ class Deploy
     protected function getCommonProcesses()
     {
         return [
-            new Process(['git', 'pull', "origin/{$this->config['pulling_branch']}"]),
+            new Process(['git', 'pull', "origin/{$this->config['branch']}"]),
             new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
             new Process(['composer', 'dump-autoload']),
             new Process(['yarn', 'install', '--production']),
@@ -148,7 +168,7 @@ class Deploy
 
         return $github_payload->action === 'closed'
             && $github_payload->pull_request->merged
-            && $github_payload->pull_request->base->ref === $this->config['pulling_branch']
+            && $github_payload->pull_request->base->ref === $this->config['branch']
             && $this->deployAllowed($github_payload);
     }
 
@@ -161,7 +181,7 @@ class Deploy
     protected function deployAllowed($github_payload)
     {
         foreach ($github_payload->pull_request->labels as $github_label) {
-            if($github_label->name === self::DEPLOY_LABEL) {
+            if ($github_label->name === self::DEPLOY_LABEL) {
                 return true;
             }
         }
@@ -186,6 +206,6 @@ class Deploy
 
         $branch_to_push = array_reverse(explode('/', $github_payload->ref))[0];
 
-        return $branch_to_push === $this->config['pulling_branch'];
+        return $branch_to_push === $this->config['branch'];
     }
 }
