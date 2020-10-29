@@ -3,14 +3,14 @@
     "description": "",
     "type": "library",
     "license": "MIT",
+    "require": {
+        "ext-json": "*",
+        "php": "^7.1",
+        "symfony/process": "^5.1"
+    },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.5",
         "phpunit/phpunit": "^9.3"
-    },
-    "require": {
-        "symfony/process": "^4.1",
-        "ext-json": "*",
-        "php": "^7.1"
     },
     "autoload": {
         "psr-4": {
