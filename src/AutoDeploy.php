@@ -126,7 +126,8 @@ class AutoDeploy
     protected function getCommonProcesses()
     {
         return [
-            new Process(['git', 'pull', "origin/{$this->config['branch']}"]),
+            new Process(['git', 'pull']),
+            //new Process(['git', 'pull', "origin/{$this->config['branch']}"]),
             new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
             new Process(['composer', 'dump-autoload']),
             new Process(['yarn', 'install', '--production']),
