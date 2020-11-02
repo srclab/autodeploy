@@ -129,7 +129,8 @@ class AutoDeploy
             new Process(['git', 'pull', 'origin', $this->config['branch']]),
             new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
             new Process(['composer', 'dump-autoload']),
-            new Process(['yarn', 'install', '--production']),
+            new Process(['yarn', 'install']),
+            new Process(['yarn', 'run', 'prod']),
         ];
     }
 
@@ -141,7 +142,6 @@ class AutoDeploy
     protected function getLaravelProcesses()
     {
         return [
-            new Process(['yarn', 'run', 'prod']),
             new Process(['php', 'artisan', 'migrate' , '--force']),
             new Process(['php', 'artisan', 'clear']),
             new Process(['php', 'artisan', 'cache:clear']),
