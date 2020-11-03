@@ -13,8 +13,9 @@ class AutoDeploy
      *
      * @var integer
      */
-    public const NATIVE_TYPE = 1; //нативное приложение
+    public const NATIVE_TYPE = 1; //нативное php приложение
     public const LARAVEL_TYPE = 2; //laravel приложение
+    public const FRONTEND_TYPE = 3; //frontend приложение с версткой
 
     /**
      * Метка автодеплоя в пул запросе, при которой выполнять автоматические действия.
@@ -89,6 +90,13 @@ class AutoDeploy
             }
 
             /**
+             * Команды для frontend приложения.
+             */
+            if ($deploy_type == self::FRONTEND_TYPE) {
+                $processes = array_merge($processes, $this->getFrontendProcesses());
+            }
+
+            /**
              * Выполнения команд.
              */
             foreach ($processes as $process) {
@@ -127,10 +135,36 @@ class AutoDeploy
     {
         return [
             new Process(['git', 'pull', 'origin', $this->config['branch']]),
+        ];
+    }
+
+    /**
+     * Процессы для нативного php приложения.
+     *
+     * @return Process[]
+     */
+    protected function getNativeProcesses()
+    {
+        return [
             new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
             new Process(['composer', 'dump-autoload']),
             new Process(['yarn', 'install']),
             new Process(['yarn', 'run', 'dev']),
+        ];
+    }
+
+    /**
+     * Процессы для frontend приложения с версткой.
+     *
+     * @return Process[]
+     */
+    protected function getFrontendProcesses()
+    {
+        return [
+            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
+            new Process(['composer', 'dump-autoload']),
+            new Process(['yarn', 'install']),
+            new Process(['yarn', 'run', 'build']),
         ];
     }
 
