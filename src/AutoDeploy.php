@@ -83,17 +83,24 @@ class AutoDeploy
             $processes = $this->getCommonProcesses();
 
             /**
-             * Команды для laravel приложения.
+             * Команды для разных видов приложений.
              */
-            if ($deploy_type == self::LARAVEL_TYPE) {
-                $processes = array_merge($processes, $this->getLaravelProcesses());
-            }
+            switch ($deploy_type) {
 
-            /**
-             * Команды для frontend приложения.
-             */
-            if ($deploy_type == self::FRONTEND_TYPE) {
-                $processes = array_merge($processes, $this->getFrontendProcesses());
+                case self::LARAVEL_TYPE:
+                    $processes = array_merge($processes, $this->getLaravelProcesses());
+                    break;
+
+                case self::FRONTEND_TYPE:
+                    $processes = array_merge($processes, $this->getFrontendProcesses());
+                    break;
+
+                case self::NATIVE_TYPE:
+                    $processes = array_merge($processes, $this->getNativeProcesses());
+                    break;
+
+                default:
+                    throw new \Exception('Неизвестный тип приложения.');
             }
 
             /**
@@ -176,12 +183,16 @@ class AutoDeploy
     protected function getLaravelProcesses()
     {
         return [
+            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
+            new Process(['composer', 'dump-autoload']),
             new Process(['php', 'artisan', 'migrate' , '--force']),
             new Process(['php', 'artisan', 'clear']),
             new Process(['php', 'artisan', 'cache:clear']),
             new Process(['php', 'artisan', 'config:cache']),
             new Process(['php', 'artisan', 'route:cache']),
             new Process(['php', 'artisan', 'view:cache']),
+            new Process(['yarn', 'install']),
+            new Process(['yarn', 'run', 'dev']),
         ];
     }
 
