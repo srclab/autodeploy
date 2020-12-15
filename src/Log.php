@@ -2,7 +2,8 @@
 
 namespace SrcLab\AutoDeploy;
 
-use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 
 class Log
@@ -15,17 +16,18 @@ class Log
     /**
      * Получение экземпляра лога.
      *
-     * @param string $name
      * @return \Monolog\Logger
      */
-    public static function log($name = 'app')
+    public static function log()
     {
         if(!empty(self::$log)) {
             return self::$log;
         }
 
-        self::$log = new Logger($name);
-        self::$log->pushHandler(new StreamHandler(getcwd().'/../storage/logs/', Logger::WARNING));
+        self::$log = new Logger('app');
+        $handler = new RotatingFileHandler(__DIR__.'/../../../../storage/logs/app.log', 3, Logger::INFO);
+        $handler->setFormatter(new LineFormatter(null, 'Y-m-d H:i:s', true, true));
+        self::$log->pushHandler($handler);
 
         return self::$log;
     }
