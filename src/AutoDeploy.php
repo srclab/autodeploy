@@ -2,6 +2,8 @@
 
 namespace SrcLab\AutoDeploy;
 
+use SrcLab\AutoDeploy\Models\Notifications\AutoDeploy as AutoDeployNotificationModel;
+use SrcLab\AutoDeploy\Notifications\AutodeploySuccess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Throwable;
@@ -35,9 +37,9 @@ class AutoDeploy
      */
     public function __construct(array $config)
     {
-        if (empty($config['token']) || empty($config['branch']) || empty($config['work_dir'])) {
+        /*if (empty($config['token']) || empty($config['branch']) || empty($config['work_dir'])) {
             throw new AutoDeployException('Не установлены обязательные параметры конфигурации.', 500);
-        }
+        }*/
 
         $this->config = $config;
     }
@@ -110,6 +112,8 @@ class AutoDeploy
                 $process->setWorkingDirectory($this->config['work_dir']);
                 $process->mustRun();
             }
+
+            $this->sendSuccessNotification();
 
             return true;
 
@@ -252,5 +256,14 @@ class AutoDeploy
         $branch_to_push = array_reverse(explode('/', $github_payload->ref))[0];
 
         return $branch_to_push === $this->config['branch'];
+    }
+
+    /**
+     * Отправка уведомления об успешном деплое.
+     */
+    protected function sendSuccessNotification() {
+        if(!empty($this->config['notification']['slack']['enabled']) && !empty($this->config['notification']['slack']['hooks_url'])) {
+            (new AutoDeployNotificationModel())->notify(new AutodeploySuccess());
+        }
     }
 }
