@@ -6,6 +6,7 @@ use SrcLab\AutoDeploy\Models\Notifications\AutoDeploy as AutoDeployNotificationM
 use SrcLab\AutoDeploy\Notifications\AutodeploySuccess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class AutoDeploy
@@ -264,10 +265,10 @@ class AutoDeploy
     protected function sendSuccessNotification() {
         if(!empty($this->config['notification']['slack']['enabled'])) {
             if(empty($this->config['notification']['slack']['hooks_url'])) {
-                throw new \Exception('Не установлен hooks url для уведомлений в Slack');
+                Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
+            } else {
+                (new AutoDeployNotificationModel())->notify(new AutodeploySuccess());
             }
-
-            (new AutoDeployNotificationModel())->notify(new AutodeploySuccess());
         }
     }
 }

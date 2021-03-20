@@ -4,6 +4,7 @@ namespace SrcLab\AutoDeploy;
 
 use SrcLab\AutoDeploy\Models\Notifications\AutoDeploy as AutoDeployNotificationModel;
 use SrcLab\AutoDeploy\Notifications\AutodeployError;
+use Illuminate\Support\Facades\Log;
 use Exception;
 use Throwable;
 
@@ -30,10 +31,10 @@ class AutoDeployException extends Exception
     {
         if(!empty(config('services.github_auto_deploy.notification.slack.enabled'))) {
             if(empty(config('services.github_auto_deploy.notification.slack.hooks_url'))) {
-                throw new \Exception('Не установлен hooks url для уведомлений в Slack');
+                Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
+            } else {
+                (new AutoDeployNotificationModel())->notify(new AutodeployError($message));
             }
-
-            (new AutoDeployNotificationModel())->notify(new AutodeployError($message));
         }
     }
 }
