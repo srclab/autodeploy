@@ -37,9 +37,9 @@ class AutoDeploy
      */
     public function __construct(array $config)
     {
-        /*if (empty($config['token']) || empty($config['branch']) || empty($config['work_dir'])) {
+        if (empty($config['token']) || empty($config['branch']) || empty($config['work_dir'])) {
             throw new AutoDeployException('Не установлены обязательные параметры конфигурации.', 500);
-        }*/
+        }
 
         $this->config = $config;
     }
