@@ -28,7 +28,11 @@ class AutoDeployException extends Exception
      */
     private function sendNotificationAboutError($message)
     {
-        if(!empty(config('services.github_auto_deploy.notification.slack.enabled')) && !empty(config('services.github_auto_deploy.notification.slack.enabled'))) {
+        if(!empty(config('services.github_auto_deploy.notification.slack.enabled'))) {
+            if(empty(config('services.github_auto_deploy.notification.slack.hooks_url'))) {
+                throw new \Exception('Не установлен hooks url для уведомлений в Slack');
+            }
+
             (new AutoDeployNotificationModel())->notify(new AutodeployError($message));
         }
     }

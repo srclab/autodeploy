@@ -262,7 +262,11 @@ class AutoDeploy
      * Отправка уведомления об успешном деплое.
      */
     protected function sendSuccessNotification() {
-        if(!empty($this->config['notification']['slack']['enabled']) && !empty($this->config['notification']['slack']['hooks_url'])) {
+        if(!empty($this->config['notification']['slack']['enabled'])) {
+            if(empty($this->config['notification']['slack']['hooks_url'])) {
+                throw new \Exception('Не установлен hooks url для уведомлений в Slack');
+            }
+
             (new AutoDeployNotificationModel())->notify(new AutodeploySuccess());
         }
     }
