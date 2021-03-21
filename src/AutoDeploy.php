@@ -3,7 +3,7 @@
 namespace SrcLab\AutoDeploy;
 
 use SrcLab\AutoDeploy\Models\Notifications\AutoDeploy as AutoDeployNotificationModel;
-use SrcLab\AutoDeploy\Notifications\AutodeploySuccess;
+use SrcLab\AutoDeploy\Notifications\AutoDeploySuccess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Log;
@@ -267,7 +267,7 @@ class AutoDeploy
             if(empty($this->config['notification']['slack']['hooks_url'])) {
                 Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
             } else {
-                (new AutoDeployNotificationModel())->notify(new AutodeploySuccess());
+                (new AutoDeployNotificationModel())->notify(new AutoDeploySuccess());
             }
         }
     }
