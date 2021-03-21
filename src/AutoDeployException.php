@@ -2,7 +2,7 @@
 
 namespace SrcLab\AutoDeploy;
 
-use SrcLab\AutoDeploy\Models\Notifications\AutoDeploy as AutoDeployNotificationModel;
+use SrcLab\AutoDeploy\Models\AutoDeploy as AutoDeployNotificationModel;
 use SrcLab\AutoDeploy\Notifications\AutodeployError;
 use Illuminate\Support\Facades\Log;
 use Exception;

@@ -2,7 +2,7 @@
 
 namespace SrcLab\AutoDeploy;
 
-use SrcLab\AutoDeploy\Models\Notifications\AutoDeploy as AutoDeployNotificationModel;
+use SrcLab\AutoDeploy\Models\AutoDeploy as AutoDeployNotificationModel;
 use SrcLab\AutoDeploy\Notifications\AutodeploySuccess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;

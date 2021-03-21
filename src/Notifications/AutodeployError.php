@@ -10,8 +10,6 @@ use Illuminate\Notifications\Notification;
 
 class AutodeployError extends Notification
 {
-    use Queueable;
-
     /**
      * @var string
      */

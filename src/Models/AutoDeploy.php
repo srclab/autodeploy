@@ -1,11 +1,10 @@
 <?php
 
-namespace SrcLab\AutoDeploy\Models\Notifications;
+namespace SrcLab\AutoDeploy\Models;
 
-use App\Models\Model;
 use Illuminate\Notifications\Notifiable;
 
-class AutoDeploy extends Model
+class AutoDeploy
 {
     use Notifiable;
 

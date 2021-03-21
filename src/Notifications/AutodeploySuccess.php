@@ -10,8 +10,6 @@ use Illuminate\Notifications\Notification;
 
 class AutodeploySuccess extends Notification
 {
-    use Queueable;
-
     /**
      * Get the notification's delivery channels.
      *
