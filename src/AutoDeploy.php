@@ -2,8 +2,11 @@
 
 namespace SrcLab\AutoDeploy;
 
+use SrcLab\AutoDeploy\Models\AutoDeploy as AutoDeployNotificationModel;
+use SrcLab\AutoDeploy\Notifications\AutoDeploySuccess;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class AutoDeploy
@@ -110,6 +113,8 @@ class AutoDeploy
                 $process->setWorkingDirectory($this->config['work_dir']);
                 $process->mustRun();
             }
+
+            $this->sendSuccessNotification();
 
             return true;
 
@@ -252,5 +257,18 @@ class AutoDeploy
         $branch_to_push = array_reverse(explode('/', $github_payload->ref))[0];
 
         return $branch_to_push === $this->config['branch'];
+    }
+
+    /**
+     * Отправка уведомления об успешном деплое.
+     */
+    protected function sendSuccessNotification() {
+        if(!empty($this->config['notification']['slack']['enabled'])) {
+            if(empty($this->config['notification']['slack']['hooks_url'])) {
+                Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
+            } else {
+                (new AutoDeployNotificationModel())->notify(new AutoDeploySuccess());
+            }
+        }
     }
 }
