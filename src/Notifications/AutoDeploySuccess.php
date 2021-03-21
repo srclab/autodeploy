@@ -4,11 +4,10 @@ namespace SrcLab\AutoDeploy\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
-class AutodeploySuccess extends Notification
+class AutoDeploySuccess extends Notification
 {
     /**
      * Get the notification's delivery channels.

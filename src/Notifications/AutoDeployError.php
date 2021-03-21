@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
-class AutodeployError extends Notification
+class AutoDeployError extends Notification
 {
     /**
      * @var string
