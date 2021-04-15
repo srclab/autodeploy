@@ -21,7 +21,7 @@ class FrontendLayoutAutoDeploy
                 /**
                  * Выполнение автодеплоя.
                  */
-                $result = (new \SrcLab\AutoDeploy\AutoDeploy([
+                $result = (new AutoDeploy([
                     'enabled' => $env['APP_AUTO_DEPLOY_ENABLED'] ?? false,
                     'token' => $env['APP_AUTO_DEPLOY_TOKEN'] ?? null,
                     'branch' => $env['APP_AUTO_DEPLOY_BRANCH'] ?? 'developer',
