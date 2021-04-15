@@ -7,7 +7,7 @@
         "ext-json": "*",
         "php": "^7.1",
         "symfony/process": "^5.1",
-        "vlucas/phpdotenv": "^5.2",
+        "vlucas/phpdotenv": "^4.0",
         "monolog/monolog": "2.1.1",
         "laravel/slack-notification-channel": "^2.3"
     },
