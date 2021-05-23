@@ -263,11 +263,13 @@ class AutoDeploy
      * Отправка уведомления об успешном деплое.
      */
     protected function sendSuccessNotification() {
-        if(!empty($this->config['notification']['slack']['enabled'])) {
-            if(empty($this->config['notification']['slack']['hooks_url'])) {
-                Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
-            } else {
-                (new AutoDeployNotificationModel())->notify(new AutoDeploySuccess());
+        if(is_laravel()) {
+            if (! empty($this->config['notification']['slack']['enabled'])) {
+                if (empty($this->config['notification']['slack']['hooks_url'])) {
+                    Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
+                } else {
+                    (new AutoDeployNotificationModel())->notify(new AutoDeploySuccess());
+                }
             }
         }
     }

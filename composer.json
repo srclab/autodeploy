@@ -6,8 +6,7 @@
     "require": {
         "ext-json": "*",
         "php": "^7.1",
-        "symfony/process": "^5.1",
-        "laravel/slack-notification-channel": "^2.3"
+        "symfony/process": "^5.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.5",
@@ -16,7 +15,10 @@
     "autoload": {
         "psr-4": {
             "SrcLab\\AutoDeploy\\": "src"
-        }
+        },
+        "files": [
+            "src/Support/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
