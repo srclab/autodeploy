@@ -31,6 +31,11 @@ class AutoDeploy
     protected const YARN_TIMEOUT = 60*5;
 
     /**
+     * Таймаут на выполнение команд composer.
+     */
+    protected const COMPOSER_TIMEOUT = 60*5;
+
+    /**
      * @var array
      */
     protected $config;
@@ -163,8 +168,8 @@ class AutoDeploy
     protected function getNativeProcesses()
     {
         return [
-            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
-            new Process(['composer', 'dump-autoload']),
+            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader'], null, null, null, self::COMPOSER_TIMEOUT),
+            new Process(['composer', 'dump-autoload'], null, null, null, self::COMPOSER_TIMEOUT),
             new Process(['yarn', 'install'], null, null, null, self::YARN_TIMEOUT),
             new Process(['yarn', 'run', 'dev'], null, null, null, self::YARN_TIMEOUT),
         ];
@@ -178,8 +183,8 @@ class AutoDeploy
     protected function getFrontendProcesses()
     {
         return [
-            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
-            new Process(['composer', 'dump-autoload']),
+            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader'], null, null, null, self::COMPOSER_TIMEOUT),
+            new Process(['composer', 'dump-autoload'], null, null, null, self::COMPOSER_TIMEOUT),
             //new Process(['yarn', 'install'], null, null, null, self::YARN_TIMEOUT),
             //new Process(['yarn', 'run', 'build'], null, null, null, self::YARN_TIMEOUT),
         ];
@@ -193,8 +198,8 @@ class AutoDeploy
     protected function getLaravelProcesses()
     {
         return [
-            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
-            new Process(['composer', 'dump-autoload']),
+            new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader'], null, null, null, self::COMPOSER_TIMEOUT),
+            new Process(['composer', 'dump-autoload'], null, null, null, self::COMPOSER_TIMEOUT),
             new Process(['php', 'artisan', 'migrate' , '--force']),
             new Process(['php', 'artisan', 'clear']),
             new Process(['php', 'artisan', 'cache:clear']),
