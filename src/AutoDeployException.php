@@ -31,11 +31,13 @@ class AutoDeployException extends Exception
      */
     private function sendNotificationAboutError($message)
     {
-        if(!empty(config('services.github_auto_deploy.notification.slack.enabled'))) {
-            if(empty(config('services.github_auto_deploy.notification.slack.hooks_url'))) {
-                Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
-            } else {
-                (new AutoDeployNotificationModel())->notify(new AutoDeployError($message));
+        if(is_laravel()) {
+            if (! empty(config('services.github_auto_deploy.notification.slack.enabled'))) {
+                if (empty(config('services.github_auto_deploy.notification.slack.hooks_url'))) {
+                    Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
+                } else {
+                    (new AutoDeployNotificationModel())->notify(new AutoDeployError($message));
+                }
             }
         }
     }
