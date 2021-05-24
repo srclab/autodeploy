@@ -26,6 +26,11 @@ class AutoDeploy
     protected const DEPLOY_LABEL = 'Автодеплой';
 
     /**
+     * Таймаут на выполнение команд yarn.
+     */
+    protected const YARN_TIMEOUT = 60*5;
+
+    /**
      * @var array
      */
     protected $config;
@@ -160,8 +165,8 @@ class AutoDeploy
         return [
             new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
             new Process(['composer', 'dump-autoload']),
-            new Process(['yarn', 'install']),
-            new Process(['yarn', 'run', 'dev']),
+            new Process(['yarn', 'install'], null, null, null, self::YARN_TIMEOUT),
+            new Process(['yarn', 'run', 'dev'], null, null, null, self::YARN_TIMEOUT),
         ];
     }
 
@@ -175,8 +180,8 @@ class AutoDeploy
         return [
             new Process(['composer', 'install', '--no-interaction', '--no-dev', '--prefer-dist', '--no-autoloader']),
             new Process(['composer', 'dump-autoload']),
-            new Process(['yarn', 'install']),
-            new Process(['yarn', 'run', 'build']),
+            //new Process(['yarn', 'install'], null, null, null, self::YARN_TIMEOUT),
+            //new Process(['yarn', 'run', 'build'], null, null, null, self::YARN_TIMEOUT),
         ];
     }
 
@@ -196,8 +201,8 @@ class AutoDeploy
             new Process(['php', 'artisan', 'config:cache']),
             new Process(['php', 'artisan', 'route:cache']),
             new Process(['php', 'artisan', 'view:cache']),
-            new Process(['yarn', 'install']),
-            new Process(['yarn', 'run', 'dev']),
+            new Process(['yarn', 'install'], null, null, null, self::YARN_TIMEOUT),
+            new Process(['yarn', 'run', 'dev'], null, null, null, self::YARN_TIMEOUT),
         ];
     }
 
