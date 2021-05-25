@@ -8,6 +8,16 @@ use Illuminate\Notifications\Notification;
 class AutoDeploySuccess extends Notification
 {
     /**
+     * @var string
+     */
+    private $pull_request;
+
+    public function __construct($pull_request)
+    {
+        $this->pull_request = $pull_request;
+    }
+
+    /**
      * Get the notification's delivery channels.
      *
      * @param  mixed  $notifiable
@@ -26,8 +36,17 @@ class AutoDeploySuccess extends Notification
      */
     public function toSlack($notifiable)
     {
-        return (new SlackMessage)
+        $message = (new SlackMessage)
             ->success()
             ->content('✅ '.config('app.name').': автодеплой выполнен');
+
+        if(!empty($this->pull_request)) {
+            $message->attachment(function ($attachment)  {
+                $attachment->title('Пулл')
+                    ->content($this->pull_request);
+            });
+        }
+
+        return $message;
     }
 }

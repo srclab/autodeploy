@@ -13,14 +13,21 @@ class AutoDeployError extends Notification
     private $error;
 
     /**
+     * @var string
+     */
+    private $pull_request;
+
+    /**
      * Create a new notification instance.
      *
      * @param string $error
+     * @param string $pull_request
      * @return void
      */
-    public function __construct($error)
+    public function __construct($error, $pull_request)
     {
         $this->error = $error;
+        $this->pull_request = $pull_request;
     }
 
     /**
@@ -42,12 +49,21 @@ class AutoDeployError extends Notification
      */
     public function toSlack($notifiable)
     {
-        return (new SlackMessage)
+        $message = (new SlackMessage)
             ->success()
             ->content('🚫 '.config('app.name').': автодеплой не выполнен.')
             ->attachment(function ($attachment)  {
                 $attachment->title('Ошибка')
                     ->content($this->error);
             });
+
+        if(!empty($this->pull_request)) {
+            $message->attachment(function ($attachment)  {
+                $attachment->title('Пулл')
+                    ->content($this->pull_request);
+            });
+        }
+
+        return $message;
     }
 }

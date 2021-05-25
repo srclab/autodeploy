@@ -69,17 +69,19 @@ class AutoDeploy
             return false;
         }
 
+        $github_payload_decode = json_decode($github_payload);
+
         /**
          * Проверка токенов.
          */
         if (!hash_equals($github_hash, $this->getLocalHash($github_payload))) {
-            throw new AutoDeployException('Хэши не совпадают', 400);
+            throw new AutoDeployException('Хэши не совпадают', 400, null, $github_payload_decode->pull_request->html_url);
         }
 
         /**
          * Проверка целевой ветки.
          */
-        if (!$this->isTargetBranchPullRequest($github_event, $github_payload) && !$this->isTargetBranchPush($github_event, $github_payload)) {
+        if (!$this->isTargetBranchPullRequest($github_event, $github_payload_decode) && !$this->isTargetBranchPush($github_event, $github_payload_decode)) {
             return false;
         }
 
@@ -119,7 +121,7 @@ class AutoDeploy
                 $process->mustRun();
             }
 
-            $this->sendSuccessNotification();
+            $this->sendSuccessNotification($github_payload_decode->pull_request->html_url);
 
             return true;
 
@@ -219,8 +221,6 @@ class AutoDeploy
             return false;
         }
 
-        $github_payload = json_decode($github_payload);
-
         return $github_payload->action === 'closed'
             && $github_payload->pull_request->merged
             && $github_payload->pull_request->base->ref === $this->config['branch']
@@ -257,8 +257,6 @@ class AutoDeploy
             return false;
         }
 
-        $github_payload = json_decode($github_payload);
-
         $branch_to_push = array_reverse(explode('/', $github_payload->ref))[0];
 
         return $branch_to_push === $this->config['branch'];
@@ -266,14 +264,16 @@ class AutoDeploy
 
     /**
      * Отправка уведомления об успешном деплое.
+     *
+     * @param string $pull_request
      */
-    protected function sendSuccessNotification() {
+    protected function sendSuccessNotification($pull_request) {
         if(is_laravel()) {
             if (! empty($this->config['notification']['slack']['enabled'])) {
                 if (empty($this->config['notification']['slack']['hooks_url'])) {
                     Log::error('[Autodeploy|Notification] Не установлен hooks url для уведомлений в Slack');
                 } else {
-                    (new AutoDeployNotificationModel())->notify(new AutoDeploySuccess());
+                    (new AutoDeployNotificationModel())->notify(new AutoDeploySuccess($pull_request));
                 }
             }
         }
