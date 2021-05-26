@@ -13,18 +13,18 @@ class AutoDeployError extends Notification
     private $error;
 
     /**
-     * @var string
+     * @var array
      */
-    private $pull_request;
+    private $pull_request = [];
 
     /**
      * Create a new notification instance.
      *
      * @param string $error
-     * @param string $pull_request
+     * @param array $pull_request
      * @return void
      */
-    public function __construct($error, $pull_request)
+    public function __construct($error, array $pull_request)
     {
         $this->error = $error;
         $this->pull_request = $pull_request;
@@ -59,8 +59,8 @@ class AutoDeployError extends Notification
 
         if(!empty($this->pull_request)) {
             $message->attachment(function ($attachment)  {
-                $attachment->title('Пулл')
-                    ->content($this->pull_request);
+                $attachment->title($this->pull_request['title'])
+                    ->content($this->pull_request['url']);
             });
         }
 

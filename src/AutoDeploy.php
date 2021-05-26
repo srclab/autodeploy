@@ -75,12 +75,18 @@ class AutoDeploy
         }
 
         $github_payload_decode = json_decode($github_payload);
+        if(!empty($github_payload_decode->pull_request)) {
+            $pull_request = [
+                'url' => $github_payload_decode->pull_request->html_url,
+                'title' => $github_payload_decode->pull_request->title
+            ];
+        }
 
         /**
          * Проверка токенов.
          */
         if (!hash_equals($github_hash, $this->getLocalHash($github_payload))) {
-            throw new AutoDeployException('Хэши не совпадают', 400, null, $github_payload_decode->pull_request->html_url);
+            throw new AutoDeployException('Хэши не совпадают', 400, null, $pull_request ?? []);
         }
 
         /**
@@ -126,12 +132,12 @@ class AutoDeploy
                 $process->mustRun();
             }
 
-            $this->sendSuccessNotification($github_payload_decode->pull_request->html_url);
+            $this->sendSuccessNotification($pull_request ?? []);
 
             return true;
 
         } catch (Throwable $e) {
-            throw new AutoDeployException($e->getMessage(), $e->getCode());
+            throw new AutoDeployException($e->getMessage(), $e->getCode(), null, $pull_request ?? []);
         }
     }
 
@@ -270,9 +276,9 @@ class AutoDeploy
     /**
      * Отправка уведомления об успешном деплое.
      *
-     * @param string $pull_request
+     * @param array $pull_request
      */
-    protected function sendSuccessNotification($pull_request) {
+    protected function sendSuccessNotification(array $pull_request) {
         if(is_laravel()) {
             if (! empty($this->config['notification']['slack']['enabled'])) {
                 if (empty($this->config['notification']['slack']['hooks_url'])) {
