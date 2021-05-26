@@ -75,12 +75,15 @@ class AutoDeploy
         }
 
         $github_payload_decode = json_decode($github_payload);
+        $pull_request_url = $github_payload_decode->pull_request->html_url ?? null;
+
+        Log::debug('Деплой, github_payload_decode', $github_payload_decode);
 
         /**
          * Проверка токенов.
          */
         if (!hash_equals($github_hash, $this->getLocalHash($github_payload))) {
-            throw new AutoDeployException('Хэши не совпадают', 400, null, $github_payload_decode->pull_request->html_url);
+            throw new AutoDeployException('Хэши не совпадают', 400, null, $pull_request_url);
         }
 
         /**
@@ -126,12 +129,12 @@ class AutoDeploy
                 $process->mustRun();
             }
 
-            $this->sendSuccessNotification($github_payload_decode->pull_request->html_url);
+            $this->sendSuccessNotification($pull_request_url);
 
             return true;
 
         } catch (Throwable $e) {
-            throw new AutoDeployException($e->getMessage(), $e->getCode());
+            throw new AutoDeployException($e->getMessage(), $e->getCode(), null, $pull_request_url);
         }
     }
 
