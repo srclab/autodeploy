@@ -18,7 +18,7 @@ class AutoDeployException extends Exception
      * @param \Throwable|null $previous
      * @param array $pull_request
      */
-    public function __construct($message = "", $code = 0, Throwable $previous = null, $pull_request = [])
+    public function __construct($message = "", $code = 0, Throwable $previous = null, array $pull_request = [])
     {
         parent::__construct($message, $code, $previous);
 
@@ -31,7 +31,7 @@ class AutoDeployException extends Exception
      * @param string $message
      * @param array $pull_request
      */
-    private function sendNotificationAboutError($message, $pull_request = [])
+    private function sendNotificationAboutError($message, array $pull_request = [])
     {
         if(is_laravel()) {
             if (! empty(config('services.github_auto_deploy.notification.slack.enabled'))) {

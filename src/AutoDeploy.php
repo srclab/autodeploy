@@ -278,7 +278,7 @@ class AutoDeploy
      *
      * @param array $pull_request
      */
-    protected function sendSuccessNotification($pull_request) {
+    protected function sendSuccessNotification(array $pull_request) {
         if(is_laravel()) {
             if (! empty($this->config['notification']['slack']['enabled'])) {
                 if (empty($this->config['notification']['slack']['hooks_url'])) {

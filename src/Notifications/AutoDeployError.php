@@ -15,7 +15,7 @@ class AutoDeployError extends Notification
     /**
      * @var array
      */
-    private $pull_request;
+    private $pull_request = [];
 
     /**
      * Create a new notification instance.
@@ -24,7 +24,7 @@ class AutoDeployError extends Notification
      * @param array $pull_request
      * @return void
      */
-    public function __construct($error, $pull_request)
+    public function __construct($error, array $pull_request)
     {
         $this->error = $error;
         $this->pull_request = $pull_request;

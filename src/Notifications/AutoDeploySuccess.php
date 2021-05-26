@@ -8,16 +8,16 @@ use Illuminate\Notifications\Notification;
 class AutoDeploySuccess extends Notification
 {
     /**
-     * @var string
+     * @var array
      */
-    private $pull_request;
+    private $pull_request = [];
 
     /**
      * AutoDeploySuccess constructor.
      *
      * @param array $pull_request
      */
-    public function __construct($pull_request)
+    public function __construct(array $pull_request)
     {
         $this->pull_request = $pull_request;
     }
