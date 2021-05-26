@@ -12,6 +12,11 @@ class AutoDeploySuccess extends Notification
      */
     private $pull_request;
 
+    /**
+     * AutoDeploySuccess constructor.
+     *
+     * @param array $pull_request
+     */
     public function __construct($pull_request)
     {
         $this->pull_request = $pull_request;
@@ -42,8 +47,8 @@ class AutoDeploySuccess extends Notification
 
         if(!empty($this->pull_request)) {
             $message->attachment(function ($attachment)  {
-                $attachment->title('Пулл')
-                    ->content($this->pull_request);
+                $attachment->title($this->pull_request['title'])
+                    ->content($this->pull_request['url']);
             });
         }
 
