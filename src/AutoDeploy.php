@@ -77,7 +77,7 @@ class AutoDeploy
         $github_payload_decode = json_decode($github_payload);
         $pull_request_url = $github_payload_decode->pull_request->html_url ?? null;
 
-        Log::debug('Деплой, github_payload_decode', $github_payload_decode);
+        Log::debug('Деплой, github_payload_decode', [$github_payload_decode]);
 
         /**
          * Проверка токенов.
